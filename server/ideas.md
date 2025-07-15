@@ -1,0 +1,5 @@
+- Implement rate limiting on API
+- Save failed authorization/transaction inserts to reprocess later
+- Implement virtualization for list on frontend using react-window for example
+- Check best way to store amount in db and BigInt -> Number conversions
+- Check merchant categories for duplicates

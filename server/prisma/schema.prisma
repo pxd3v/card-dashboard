@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id           String   @id @default(cuid())
+  stripeId     String   @unique
+  cardholderId String
+  last4        String
+  brand        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  authorizations Authorization[]
+  transactions   Transaction[]
+  syncStates     SyncState[]
+  Operation      Operation[]
+
+  @@map("cards")
+}
+
+model Operation {
+  id              String   @id @default(cuid())
+  objectType      String // 'authorization' or 'transaction'
+  stripeCardId    String
+  stripeCreatedAt DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  authorizationId String? @unique
+  transactionId   String? @unique
+
+  authorization Authorization? @relation(fields: [authorizationId], references: [id], onDelete: Cascade)
+  transaction   Transaction?   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  card          Card           @relation(fields: [stripeCardId], references: [stripeId], onDelete: Cascade)
+
+  @@map("operations")
+}
+
+model Authorization {
+  id                       String   @id @default(cuid())
+  stripeId                 String   @unique
+  stripeCardId             String
+  amount                   BigInt // positive value
+  approved                 Boolean
+  merchantCategoryStripeId String
+  stripeCreatedAt          DateTime
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  card             Card             @relation(fields: [stripeCardId], references: [stripeId], onDelete: Cascade)
+  merchantCategory MerchantCategory @relation(fields: [merchantCategoryStripeId], references: [stripeId], onDelete: Cascade)
+  operation        Operation?
+
+  @@map("authorizations")
+}
+
+model Transaction {
+  id                       String   @id @default(cuid())
+  stripeCardId             String
+  stripeId                 String   @unique
+  amount                   BigInt // Amount in cents (negative value for captured transactions)
+  type                     String
+  merchantCategoryStripeId String
+  stripeCreatedAt          DateTime
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  card             Card             @relation(fields: [stripeCardId], references: [stripeId], onDelete: Cascade)
+  merchantCategory MerchantCategory @relation(fields: [merchantCategoryStripeId], references: [stripeId], onDelete: Cascade)
+  operation        Operation?
+
+  @@map("transactions")
+}
+
+model MerchantCategory {
+  id       String @id @default(cuid())
+  stripeId String @unique
+  name     String
+
+  transactions   Transaction[]
+  authorizations Authorization[]
+
+  @@map("merchant_categories")
+}
+
+model SyncState {
+  id           String   @id @default(cuid())
+  stripeCardId String
+  objectType   String // 'transaction' or 'authorization'
+  lastCursor   String? // Last processed cursor
+  lastSyncAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  card Card @relation(fields: [stripeCardId], references: [stripeId], onDelete: Cascade)
+
+  @@unique([stripeCardId, objectType])
+  @@map("sync_states")
+}
