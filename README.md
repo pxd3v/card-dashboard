@@ -70,6 +70,7 @@ POST /webhook/stripe              - Stripe webhook endpoint
 5. **Start development server**
    ```bash
    pnpm dev
+   pnpm stripe-listen
    ```
 
 ### Frontend Setup
