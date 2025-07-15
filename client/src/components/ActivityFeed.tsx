@@ -1,10 +1,7 @@
 import { AlertCircle } from 'lucide-react';
-import { ActivityItemIcon } from '@/components/ui/ActivityItemIcon';
-import { ActivityStatusBadge } from '@/components/ui/ActivityStatusBadge';
+import { FixedSizeList as List } from 'react-window';
 import { Spinner } from '@/components/ui/Spinner';
-import { formatAmount, formatDate } from '@/utils/formatters';
-import { getActivityInfo } from '@/utils/activityUtils';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { ActivityRow } from '@/components/ActivityRow';
 import type { ActivityItem } from '@/types/activity';
 
 interface ActivityFeedProps {
@@ -15,8 +12,6 @@ interface ActivityFeedProps {
 }
 
 export function ActivityFeed({ activities, onLoadMore, hasMore, loadingMore }: ActivityFeedProps) {
-  const { loadingRef } = useIntersectionObserver(onLoadMore, hasMore, loadingMore);
-
   if (activities.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500">
@@ -28,44 +23,41 @@ export function ActivityFeed({ activities, onLoadMore, hasMore, loadingMore }: A
     );
   }
 
+  const itemHeight = 88;
+  const containerHeight = 384;
+
+  const handleScroll = ({ scrollOffset, scrollUpdateWasRequested }: { 
+    scrollOffset: number; 
+    scrollUpdateWasRequested: boolean;
+  }) => {
+    if (scrollUpdateWasRequested) return;
+    
+    const totalHeight = activities.length * itemHeight;
+    const visibleHeight = containerHeight;
+    const scrollThreshold = totalHeight - visibleHeight - 200;
+    
+    if (scrollOffset >= scrollThreshold && hasMore && !loadingMore) {
+      onLoadMore();
+    }
+  };
+
   return (
-    <div className="h-96 overflow-y-auto space-y-4 pr-2">
-      {activities.map((item) => {
-        const activityInfo = getActivityInfo(item);
-        
-        return (
-          <div
-            key={item.id}
-            className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <div className="flex-shrink-0 mt-1">
-              <ActivityItemIcon item={item} />
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-gray-900 truncate">
-                  {activityInfo.title}
-                </h4>
-                <span className="text-sm font-semibold text-gray-900">
-                  {formatAmount(activityInfo.amount)}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-xs text-gray-500">
-                  {formatDate(item.stripeCreatedAt)}
-                </span>
-                <ActivityStatusBadge item={item} />
-              </div>
-            </div>
-          </div>
-        );
-      })}
+    <div className="h-96">
+      <List
+        height={containerHeight}
+        itemCount={activities.length}
+        itemSize={itemHeight}
+        itemData={activities}
+        width="100%"
+        className="pr-2"
+        onScroll={handleScroll}
+      >
+        {ActivityRow}
+      </List>
       
-      {hasMore && (
-        <div ref={loadingRef} className="flex justify-center py-4">
-          <Spinner loading={loadingMore} />
+      {hasMore && loadingMore && (
+        <div className="flex justify-center py-4">
+          <Spinner loading={true} />
         </div>
       )}
     </div>
