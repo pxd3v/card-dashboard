@@ -1,26 +1,6 @@
 # Card Dashboard
 
-A comprehensive dashboard for managing Stripe Issuing card data with a modern React frontend and Node.js backend.
-
-## 🏗️ Architecture
-
-This project consists of two main components:
-
-### 🖥️ Client (Frontend)
-
-- **Framework**: Next.js 15 with React 19
-- **Styling**: Tailwind CSS 4
-- **Charts**: Recharts for data visualization
-- **Icons**: Lucide React
-- **Language**: TypeScript
-
-### ️ Server (Backend)
-
-- **Runtime**: Node.js with Express
-- **Database**: PostgreSQL with Prisma ORM
-- **Payments**: Stripe Issuing API integration
-- **Language**: TypeScript
-- **Security**: Helmet, CORS, Rate limiting
+A dashboard for managing Stripe Issuing card data.
 
 ## 📊 Data Models
 
@@ -46,7 +26,7 @@ This project consists of two main components:
 - **Activity Feed** - Paginated transaction and authorization history
 - **Responsive Design** - Modern UI that works on all devices
 
-## 📡 API Endpoints
+## API Endpoints
 
 ```
 GET  /api/card/activity           - List all transactions and authorizations, with pagination
@@ -55,7 +35,7 @@ GET  /api/metrics/summary         - Transactions stats summary
 POST /webhook/stripe              - Stripe webhook endpoint
 ```
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Backend Setup
 
