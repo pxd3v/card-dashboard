@@ -2,13 +2,12 @@ import express, { Router } from 'express';
 import { MetricsController } from '../../controllers/metricsController';
 import { CategoryBreakdownService } from '../../services/categoryBreakdownService';
 import { SpendingSummaryService } from '../../services/spendingSummaryService';
-import { PrismaClient } from '../../generated/prisma';
 import { PrismaTransactionRepository } from '../../repositories/prisma/PrismaTransactionRepository';
+import { prismaClient } from '../../prisma';
 
 const router: express.Router = Router();
 
-const prismaClient = new PrismaClient();
-const transactionRepository = new PrismaTransactionRepository(prismaClient);
+const transactionRepository = new PrismaTransactionRepository(prismaClient.transaction);
 
 const categoryBreakdownService = new CategoryBreakdownService(transactionRepository);
 const spendingSummaryService = new SpendingSummaryService(transactionRepository);

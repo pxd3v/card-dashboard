@@ -8,11 +8,10 @@ import { PrismaSyncStateRepository } from '../src/repositories/prisma/PrismaSync
 import { StripeClient } from '../src/clients/stripeClient';
 import { StripeTransactionService } from '../src/services/stripe/transactionService';
 import { StripeAuthorizationService } from '../src/services/stripe/authorizationService';
-import { PrismaClient } from '../src/generated/prisma';
 import { SyncMode, StripeSyncDataService } from '../src/services/sync/stripe/SyncDataService';
+import { prismaClient } from '../src/prisma';
 
 async function main() {
-  const prismaClient = new PrismaClient()
   const stripeClient = new StripeClient()
 
   const cardRepository = new PrismaCardRepository(prismaClient.card)

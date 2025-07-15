@@ -1,7 +1,6 @@
 import cron from 'node-cron'
 
 import { StripeClient } from '../clients/stripeClient'
-import { PrismaClient } from '../generated/prisma'
 import { PrismaAuthorizationRepository } from '../repositories/prisma/PrismaAuthorizationRepository'
 import { PrismaCardRepository } from '../repositories/prisma/PrismaCardRepository'
 import { PrismaSyncStateRepository } from '../repositories/prisma/PrismaSyncStateRepository'
@@ -10,14 +9,14 @@ import { StripeAuthorizationService } from '../services/stripe/authorizationServ
 import { StripeTransactionService } from '../services/stripe/transactionService'
 import { StripeSyncDataService } from '../services/sync/stripe/SyncDataService'
 import { SyncCardDataTask } from './SyncCardDataTask'
+import { prismaClient } from '../prisma'
 
 export function scheduleTasks () {
-  const prismaClient = new PrismaClient()
   const stripeClient = new StripeClient()
 
   const cardRepository = new PrismaCardRepository(prismaClient.card)
-  const transactionRepository = new PrismaTransactionRepository(prismaClient)
-  const authorizationRepository = new PrismaAuthorizationRepository(prismaClient)
+  const transactionRepository = new PrismaTransactionRepository(prismaClient.transaction)
+  const authorizationRepository = new PrismaAuthorizationRepository(prismaClient.authorization)
   const syncStateRepository = new PrismaSyncStateRepository(prismaClient.syncState)
 
   const stripeTransactionService = new StripeTransactionService(stripeClient)

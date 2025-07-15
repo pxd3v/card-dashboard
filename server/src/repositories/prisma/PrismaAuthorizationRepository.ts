@@ -2,22 +2,22 @@ import { PrismaClient } from '../../generated/prisma';
 import { IAuthorizationRepository, ICreateAuthorization } from '../interfaces/IAuthorizationRepository';
 
 export class PrismaAuthorizationRepository implements IAuthorizationRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaClient['authorization']) {}
 
   async findByStripeId({ stripeId }: { stripeId: string }) {
-    return this.prisma.authorization.findFirst({
+    return this.prisma.findFirst({
       where: { stripeId }
     });
   }
 
   async findById({ id }: { id: string }) {
-    return this.prisma.authorization.findFirst({
+    return this.prisma.findFirst({
       where: { id }
     });
   }
 
   async findByStripeCardId({ stripeCardId, limit = 50, cursor, approvedOnly }: { stripeCardId: string, limit?: number, cursor?: string, approvedOnly?: boolean }) {
-    return this.prisma.authorization.findMany({
+    return this.prisma.findMany({
       where: { stripeCardId, approved: approvedOnly  },
       take: limit,
       skip: cursor ? 1 : 0,
@@ -28,7 +28,7 @@ export class PrismaAuthorizationRepository implements IAuthorizationRepository {
 
   async findNewestByCard({ stripeCardId }: { stripeCardId?: string }) {
     const whereClause = stripeCardId ? { stripeCardId } : {};
-    return this.prisma.authorization.findFirst({
+    return this.prisma.findFirst({
       where: whereClause,
       orderBy: { stripeCreatedAt: 'desc' },
     });
@@ -37,7 +37,7 @@ export class PrismaAuthorizationRepository implements IAuthorizationRepository {
   async createWithOperationAndMerchantCategory({ data }: { data: ICreateAuthorization }) {
     const stripeCreatedAt = new Date(data.stripeCreatedAt * 1000)
     
-    return this.prisma.authorization.create({
+    return this.prisma.create({
       data: {
         ...data,
         stripeCreatedAt,

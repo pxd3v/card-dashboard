@@ -2,23 +2,23 @@ import { PrismaClient } from '../../generated/prisma';
 import { ICreateTransaction, ITransactionRepository } from '../interfaces/ITransactionRepository';
 
 export class PrismaTransactionRepository implements ITransactionRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaClient['transaction']) {}
 
   async findByStripeId({ stripeId }: { stripeId: string }) {
-    return this.prisma.transaction.findFirst({
+    return this.prisma.findFirst({
       where: { stripeId }
     });
   }
 
   async findById({ id }: { id: string }) {
-    return this.prisma.transaction.findFirst({
+    return this.prisma.findFirst({
       where: { id }
     });
   }
 
   async findNewestByCard({ stripeCardId }: { stripeCardId?: string }) {
     const whereClause = stripeCardId ? { stripeCardId } : {};
-    return this.prisma.transaction.findFirst({
+    return this.prisma.findFirst({
       where: whereClause,
       orderBy: { stripeCreatedAt: 'desc' },
     });
@@ -27,7 +27,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
   async createWithOperationAndMerchantCategory({ data }: { data: ICreateTransaction & { merchantCategory: { stripeId: string, name: string }} }) {
     const stripeCreatedAt = new Date(data.stripeCreatedAt * 1000)
     
-    return this.prisma.transaction.create({
+    return this.prisma.create({
       data: {
         amount: data.amount,
         stripeId: data.stripeId,
@@ -61,13 +61,13 @@ export class PrismaTransactionRepository implements ITransactionRepository {
   }
 
   async findAllByStripeCardId({ stripeCardId }: { stripeCardId: string }) {
-    return this.prisma.transaction.findMany({
+    return this.prisma.findMany({
       where: { stripeCardId },
     });
   }
 
   async findAllByStripeCardIdWithCategories({ stripeCardId }: { stripeCardId: string }) {
-    return this.prisma.transaction.findMany({
+    return this.prisma.findMany({
       where: {
         stripeCardId,
       },

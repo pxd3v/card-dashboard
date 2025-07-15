@@ -4,13 +4,12 @@ import { PrismaAuthorizationRepository } from '../../repositories/prisma/PrismaA
 import { StripeWebhookController } from '../../controllers/stripe/WebhookController';
 import { StripeWebhookService } from '../../services/stripe/webhookService';
 import { StripeClient } from '../../clients/stripeClient';
-import { PrismaClient } from '../../generated/prisma';
+import { prismaClient } from '../../prisma';
 
 const router: express.Router = Router();
 
-const prisma = new PrismaClient();
-const transactionRepo = new PrismaTransactionRepository(prisma);
-const authorizationRepo = new PrismaAuthorizationRepository(prisma);
+const transactionRepo = new PrismaTransactionRepository(prismaClient.transaction);
+const authorizationRepo = new PrismaAuthorizationRepository(prismaClient.authorization);
 const stripeClient = new StripeClient()
 const stripeWebhookService = new StripeWebhookService(transactionRepo, authorizationRepo, stripeClient)
 

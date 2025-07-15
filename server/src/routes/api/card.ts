@@ -1,12 +1,10 @@
 import express, { Router } from 'express';
 import { CardController } from '../../controllers/CardController';
 import { ActivityService } from '../../services/activityService';
-import { PrismaClient } from '../../generated/prisma';
 import { PrismaOperationRepository } from '../../repositories/prisma/PrismaOperationRepository';
+import { prismaClient } from '../../prisma';
 
 const router: express.Router = Router();
-
-const prismaClient = new PrismaClient();
 
 const operationRepository = new PrismaOperationRepository(prismaClient.operation)
 
