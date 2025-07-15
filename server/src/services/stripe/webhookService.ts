@@ -51,7 +51,7 @@ export class StripeWebhookService {
 
     await this.authorizationRepository.createWithOperationAndMerchantCategory({ 
       data: {
-        amount: authorization.amount,
+        amount: Math.abs(authorization.amount),
         stripeCreatedAt: authorization.created,
         stripeId: authorization.id,
         approved: authorization.approved,
@@ -73,7 +73,7 @@ export class StripeWebhookService {
 
     await this.transactionRepository.createWithOperationAndMerchantCategory({ 
       data: {
-        amount: transaction.amount,
+        amount: Math.abs(transaction.amount),
         stripeCreatedAt: transaction.created,
         stripeId: transaction.id,
         type: transaction.type,

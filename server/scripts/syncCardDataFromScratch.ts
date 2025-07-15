@@ -15,8 +15,8 @@ async function main() {
   const stripeClient = new StripeClient()
 
   const cardRepository = new PrismaCardRepository(prismaClient.card)
-  const transactionRepository = new PrismaTransactionRepository(prismaClient)
-  const authorizationRepository = new PrismaAuthorizationRepository(prismaClient)
+  const transactionRepository = new PrismaTransactionRepository(prismaClient.transaction)
+  const authorizationRepository = new PrismaAuthorizationRepository(prismaClient.authorization)
   const syncStateRepository = new PrismaSyncStateRepository(prismaClient.syncState)
   
   const stripeTransactionService = new StripeTransactionService(stripeClient)
